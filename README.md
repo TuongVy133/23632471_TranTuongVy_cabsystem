@@ -1,12 +1,12 @@
 # 23632471_TranTuongVy_cabsystem
-## Bước 1: Tìm hiểu nghiệp vụ của hệ thống
-1.	Vấn đề hiện tại là gì?
+### Bước 1: Tìm hiểu nghiệp vụ của hệ thống
+## 1.	Vấn đề hiện tại là gì?
 -	Phân công tài xế chủ yếu được thực hiện thủ công
 -	Khách hàng khó theo dõi trạng thái chuyến đi
 -	Thông tin thanh toán chưa được quản lý tập trung
 -	Bộ phận vận hành gặp khó khăn khi muốn mở rộng hệ thống
 -	Ban lãnh đạo mong muốn xây dựng một nền tảng CAB mới có khả năng phục vụ số lượng lớn khách hàng và tài xế, đồng thời có thể phát triển thêm các tính năng trong tương lai.
-2.	Mục tiêu?
+## 2.	Mục tiêu?
 - Số hóa quy trình đặt xe từ lúc khách hàng tạo yêu cầu đến khi hoàn thành chuyến.
 - Tự động hóa việc tìm kiếm và phân công tài xế.
 - Cho phép khách hàng theo dõi trạng thái chuyến đi.
@@ -15,23 +15,23 @@
 - Hỗ trợ nhân viên vận hành theo dõi và xử lý các chuyến đi.
 - Cung cấp báo cáo về chuyến đi, doanh thu, tỷ lệ hoàn thành, tỷ lệ hủy và hiệu quả tài xế.
 - Đảm bảo hệ thống ổn định, bảo mật và có khả năng mở rộng khi số lượng khách hàng/tài xế tăng.
-3.	Lý do gì phải xây dựng hệ thống?
+## 3.	Lý do gì phải xây dựng hệ thống?
 -	Công ty ABC là một doanh nghiệp cung cấp dịch vụ đặt xe trực tuyến. Hiện tại khách hàng có thể liên hệ với tổng đài hoặc sử dụng một ứng dụng đơn giản để yêu cầu xe.
-4.	Ai là người tham gia và sử dụng hệ thống?
+## 4.	Ai là người tham gia và sử dụng hệ thống?
 - Khách hàng:	Đăng ký, đăng nhập, đặt xe, theo dõi chuyến đi, xem lịch sử, thanh toán và đánh giá tài xế
 - Tài xế:	Quản lý hồ sơ/phương tiện, nhận hoặc từ chối chuyến, cập nhật trạng thái chuyến và vị trí
 - Nhân viên vận hành:	Quản lý khách hàng, tài xế, phương tiện, chuyến đi; theo dõi và xử lý các trường hợp lỗi
 - Ban lãnh đạo:	Xem báo cáo về số lượng chuyến, doanh thu, tỷ lệ hoàn thành, tỷ lệ hủy và hiệu quả tài xế
 - Nhà cung cấp thanh toán bên ngoài:	Tham gia xử lý các giao dịch thanh toán điện tử
 - Nhà cung cấp dịch vụ thông báo:	Hỗ trợ gửi thông báo cho khách hàng và tài xế
-5.	Hệ thống mới mang lại giá trị kinh doanh gì?
+## 5.	Hệ thống mới mang lại giá trị kinh doanh gì?
 - Khách hàng:	Đặt xe thuận tiện, biết tài xế nào nhận chuyến, theo dõi chuyến và thanh toán dễ dàng
 - Tài xế:	Nhận chuyến phù hợp, cập nhật trạng thái và quản lý thông tin cá nhân/phương tiện
 - Nhân viên vận hành:	Quản lý tập trung khách hàng, tài xế, phương tiện và chuyến đi
 - Ban lãnh đạo:	Có dữ liệu và báo cáo để đánh giá doanh thu, hoạt động và hiệu quả tài xế
 - Doanh nghiệp:	Giảm thao tác thủ công, tăng khả năng mở rộng và phát triển thêm dịch vụ
 
-## Bước 2: Xác định Stakeholder và Vai trò
+### Bước 2: Xác định Stakeholder và Vai trò
 
 | STT | Stakeholder | Vai trò |
 |:---:|---|---|
@@ -59,7 +59,7 @@ quadrantChart
     "Nhà cung cấp thanh toán": [0.55, 0.70]
     "Nhà cung cấp thông báo": [0.45, 0.45]
   ```
-## Bước 3: Mục đích của nghiệp vụ
+### Bước 3: Mục đích của nghiệp vụ
 
 | STT | Nghiệp vụ | Mục đích |
 |:---:|---|---|
@@ -76,34 +76,92 @@ quadrantChart
 | 11 | **Đánh giá tài xế** | Cho phép khách hàng đánh giá tài xế sau khi chuyến đi hoàn thành |
 | 12 | **Báo cáo hoạt động** | Cung cấp dữ liệu về số lượng chuyến, doanh thu, tỷ lệ hoàn thành, tỷ lệ hủy và hiệu quả tài xế |
 
-## Bước 4: Xác định phạm vi dự án
+### Bước 4: Xác định phạm vi
 
-> **Thời gian thực hiện: 7 tuần**
+## 1. Trong phạm vi 
 
-| STT | Module | Phạm vi chính | Mức độ |
-|:---:|---|---|:---:|
-| 1 | **Quản lý khách hàng** | Đăng ký, đăng nhập, quản lý thông tin, lịch sử chuyến | Bắt buộc |
-| 2 | **Quản lý tài xế** | Hồ sơ, phương tiện, trạng thái hoạt động | Bắt buộc |
-| 3 | **Đặt xe** | Điểm đón, điểm đến, loại xe, tạo yêu cầu | Bắt buộc |
-| 4 | **Tìm & phân công tài xế** | Tìm tài xế phù hợp và xử lý từ chối | Bắt buộc |
-| 5 | **Quản lý chuyến đi** | Cập nhật và theo dõi trạng thái chuyến | Bắt buộc |
-| 6 | **Tính cước & thanh toán** | Tính tiền, tiền mặt, thanh toán điện tử | Bắt buộc |
-| 7 | **Thông báo** | Thông báo cho khách hàng và tài xế | Bắt buộc |
-| 8 | **Quản lý vận hành** | Quản lý khách hàng, tài xế, phương tiện, chuyến đi | Bắt buộc |
-| 9 | **Báo cáo** | Chuyến, doanh thu, hoàn thành, hủy, hiệu quả tài xế | Cơ bản |
-| 10 | **Đánh giá tài xế** | Khách hàng đánh giá sau chuyến | Cơ bản |
+| STT | Module hệ thống      | Phạm vi chính                                                            |
+| :-: | -------------------- | ------------------------------------------------------------------------ |
+|  1  | **Auth Module**      | Đăng ký, đăng nhập, xác thực và phân quyền người dùng                    |
+|  2  | **Customer Module**  | Quản lý hồ sơ khách hàng, địa chỉ, lịch sử chuyến đi và đánh giá         |
+|  3  | **Driver Module**    | Quản lý hồ sơ tài xế, bằng lái, phương tiện và trạng thái hoạt động      |
+|  4  | **Booking Module**   | Khởi tạo đặt xe, tìm kiếm và phân công tài xế, quản lý trạng thái chuyến |
+|  5  | **Tracking Module**  | Theo dõi vị trí GPS tài xế và trạng thái chuyến theo thời gian thực      |
+|  6  | **Payment Module**   | Thanh toán tiền mặt, thanh toán trực tuyến và quản lý giao dịch          |
+|  7  | **Dashboard Module** | Giám sát chuyến đi, xử lý sự cố, đối soát tài chính và báo cáo quản trị  |
 
-### Tiến độ 7 tuần
+## 2. Ngoài phạm vi 
 
-| Tuần | Nội dung |
-|:---:|---|
-| 1 | Phân tích yêu cầu & thiết kế phạm vi |
-| 2 | Quản lý khách hàng |
-| 3 | Quản lý tài xế |
-| 4 | Đặt xe & tìm tài xế |
-| 5 | Quản lý chuyến & tính cước |
-| 6 | Thanh toán, thông báo & quản lý vận hành |
-| 7 | Tích hợp, kiểm thử & hoàn thiện |
+* Tích hợp cổng thanh toán thực tế (chỉ dùng tài khoản thử nghiệm Sandbox).
+* Các tính năng nâng cao: Đặt xe ghép, giao hàng, đặt trước chuyến đi.
+* Chương trình tích điểm, khuyến mãi hoặc mã giảm giá phức tạp.
 
-## Bước 5: Chuyển các yêu cầu đó thành yêu cầu nghiệp vụ
+## 3. Lộ trình 7 tuần 
 
+|  Tuần | Công việc chính                                                                         |
+| :---: | --------------------------------------------------------------------------------------- |
+| **1** | Thu thập yêu cầu, xác định phạm vi và lập bảng Stakeholder.                             |
+| **2** | Phân tích nghiệp vụ (Sơ đồ Use Case, Activity Diagram).                                 |
+| **3** | Thiết kế Cơ sở dữ liệu (ERD) và phân chia cấu trúc các Module.                          |
+| **4** | Xây dựng Module Auth (Đăng nhập/Phân quyền), Module Quản lý Khách hàng & Module Đặt xe. |
+| **5** | Xây dựng Module Thanh toán (Tiền mặt/Online), Tracking & Giao diện Dashboard Quản trị.  |
+| **6** | Kiểm thử tích hợp giữa các module và sửa lỗi.                                           |
+| **7** | Hoàn thiện tài liệu README.md và tổng kết báo cáo dự án.                                |
+
+---
+
+### Bước 5: Yêu cầu nghiệp vụ 
+
+## Bảng Ma trận Quy trình Nghiệp vụ (MMBP Matrix)
+
+| STT | Giai đoạn                  | Quy trình nghiệp vụ      | Bước thực hiện                                                              | Tác nhân           | Modul hệ thống   | Thực thể dữ liệu                    |
+| :-: | -------------------------- | ------------------------ | --------------------------------------------------------------------------- | ------------------ | ---------------- | ----------------------------------- |
+|  1  | **Khởi tạo & Xác thực**    | Đăng ký & Đăng nhập      | Tạo tài khoản, xác thực OTP/Mật khẩu và cấp Token phiên làm việc            | Khách hàng, Tài xế | Auth Module      | `User`, `Account`, `Token`          |
+|  2  |                            | Phân quyền (RBAC)        | Cấp quyền truy cập giao diện và chức năng tương ứng theo vai trò            | All Users          | Auth Module      | `Role`, `Permission`                |
+|  3  | **Quản lý Khách & Tài xế** | Quản lý Hồ sơ Khách hàng | Lưu địa chỉ yêu thích, xem lịch sử chuyến đi & cài đặt thanh toán           | Khách hàng         | Customer Module  | `CustomerProfile`, `SavedAddress`   |
+|  4  |                            | Duyệt & Quản lý Tài xế   | Cập nhật bằng lái/đăng ký xe, kiểm duyệt hồ sơ tài xế vận hành              | Tài xế, Ops        | Driver Module    | `DriverProfile`, `Vehicle`          |
+|  5  | **Đặt xe & Điều phối**     | Khởi tạo Đặt xe          | Chọn điểm đi/đến, hệ thống đo khoảng cách, ước tính thời gian & báo giá     | Khách hàng         | Booking Module   | `Trip`, `FareEstimation`            |
+|  6  |                            | Ghép chuyến Tự động      | Định vị GPS, tìm tài xế gần nhất và phát thông báo mời chuyến               | Hệ thống, Tài xế   | Booking Module   | `Trip`, `DriverLocation`            |
+|  7  |                            | Xử lý Từ chối / Timeout  | Tài xế nhận/từ chối. Quá thời gian chờ tự động chuyển sang tài xế tiếp theo | Hệ thống, Tài xế   | Booking Module   | `TripStatusLog`, `DispatchRule`     |
+|  8  | **Vận hành & Theo dõi**    | Quản lý Tiến trình       | Cập nhật: Đã nhận → Đón khách → Đang di chuyển → Hoàn thành                 | Tài xế             | Booking Module   | `Trip`, `TripStatusHistory`         |
+|  9  |                            | Theo dõi Real-time       | Cập nhật vị trí GPS tài xế liên tục trên bản đồ thời gian thực              | Khách hàng, Tài xế | Tracking Module  | `GPSLog`, `LiveTracking`            |
+|  10 |                            | Giám sát & Hỗ trợ        | Giám sát danh sách chuyến đi real-time, can thiệp điều xe/hủy xe khi sự cố  | NV Vận hành        | Dashboard Module | `Trip`, `IncidentLog`               |
+|  11 | **Thanh toán & Tài chính** | Thanh toán Tiền mặt      | Khách trả tiền mặt khi đến nơi; tài xế xác nhận đã thu đủ trên ứng dụng     | Khách hàng, Tài xế | Payment Module   | `PaymentTransaction`, `CashReceipt` |
+|  12 |                            | Thanh toán Trực tuyến    | Tự động trừ tiền qua Ví/Thẻ (Tokenization) khi kết thúc chuyến              | Hệ thống, Cổng TT  | Payment Module   | `PaymentTransaction`, `Invoice`     |
+|  13 |                            | Đối soát Tài chính       | Tra cứu giao dịch, tính chiết khấu hoa hồng & quản lý ví tài xế             | NV Tài chính       | Dashboard Module | `DriverWallet`, `RevenueShare`      |
+|  14 | **Đánh giá & Báo cáo**     | Đánh giá Dịch vụ         | Chấm điểm 1-5 sao và gửi phản hồi chất lượng phục vụ sau chuyến             | Khách hàng         | Customer Module  | `Feedback`, `Rating`                |
+|  15 |                            | Báo cáo Quản trị         | Trích xuất báo cáo doanh thu, tỷ lệ hoàn thành/hủy chuyến & chỉ số KPI      | Ban Giám đốc       | Dashboard Module | `ExecutiveReport`, `Analytics`      |
+
+## Bảng Yêu cầu Nghiệp vụ (Business Requirements)
+
+|   Mã YC   | Nhóm nghiệp vụ         | Mô tả Yêu cầu Nghiệp vụ (Business Requirement)                                                  |
+| :-------: | ---------------------- | ----------------------------------------------------------------------------------------------- |
+| **BR-01** | **Xác thực & RBAC**    | Đăng ký/Đăng nhập an toàn và phân quyền truy cập theo vai trò (Khách hàng, Tài xế, Ops, Admin). |
+| **BR-02** | **Quản lý Khách hàng** | Lưu trữ thông tin hồ sơ, lịch sử chuyến đi, ưu đãi và phản hồi của Khách hàng.                  |
+| **BR-03** | **Khởi tạo Chuyến đi** | Nhập Điểm đi, Điểm đến, xem trước cước phí ước tính và chọn loại hình dịch vụ.                  |
+| **BR-04** | **Điều phối Tài xế**   | Tự động tìm kiếm và phân công tài xế phù hợp dựa trên vị trí và trạng thái sẵn sàng.            |
+| **BR-05** | **Quản lý Chuyến đi**  | Cho phép tài xế nhận chuyến và cập nhật trạng thái từ nhận chuyến đến hoàn thành.               |
+| **BR-06** | **Theo dõi Real-time** | Cập nhật và hiển thị vị trí tài xế trên bản đồ theo thời gian thực.                             |
+| **BR-07** | **Thanh toán**         | Hỗ trợ thanh toán tiền mặt và thanh toán trực tuyến sau khi hoàn thành chuyến.                  |
+| **BR-08** | **Quản lý Giao dịch**  | Lưu trữ và tra cứu thông tin giao dịch, hóa đơn và biên nhận thanh toán.                        |
+| **BR-09** | **Đánh giá Dịch vụ**   | Cho phép khách hàng đánh giá tài xế từ 1-5 sao và gửi phản hồi sau chuyến.                      |
+| **BR-10** | **Báo cáo Quản trị**   | Cung cấp báo cáo doanh thu, số chuyến, tỷ lệ hoàn thành/hủy và các chỉ số KPI.                  |
+
+### Bước 6: Phân rã các yêu cầu chức năng
+
+
+
+### Bước 7: Tiến hành vẽ use case diagram
+
+
+
+### Bước 8: Đặc tả use case
+
+
+
+### Bước 9: Phân tích quy trình nghiệp vụ seq
+
+
+
+### Bước 10: Phân tích quy tắc nghiệp vụ business rule
+ví dụ ưu tiên cho rating cao
