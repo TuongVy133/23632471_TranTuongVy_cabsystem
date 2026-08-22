@@ -16,7 +16,7 @@
 - Cung cấp báo cáo về chuyến đi, doanh thu, tỷ lệ hoàn thành, tỷ lệ hủy và hiệu quả tài xế.
 - Đảm bảo hệ thống ổn định, bảo mật và có khả năng mở rộng khi số lượng khách hàng/tài xế tăng.
 ## 3.	Lý do gì phải xây dựng hệ thống?
--	Công ty ABC là một doanh nghiệp cung cấp dịch vụ đặt xe trực tuyến. Hiện tại khách hàng có thể liên hệ với tổng đài hoặc sử dụng một ứng dụng đơn giản để yêu cầu xe.
+-	Hệ thống hiện tại tồn tại nhiều hạn chế về phân công tài xế, theo dõi chuyến đi, quản lý thanh toán và khả năng mở rộng. Vì vậy, doanh nghiệp cần xây dựng nền tảng CAB mới để số hóa và tự động hóa quy trình đặt xe, đồng thời đáp ứng khả năng mở rộng trong tương lai.
 ## 4.	Ai là người tham gia và sử dụng hệ thống?
 - Khách hàng:	Đăng ký, đăng nhập, đặt xe, theo dõi chuyến đi, xem lịch sử, thanh toán và đánh giá tài xế
 - Tài xế:	Quản lý hồ sơ/phương tiện, nhận hoặc từ chối chuyến, cập nhật trạng thái chuyến và vị trí
