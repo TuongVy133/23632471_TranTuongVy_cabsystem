@@ -1,0 +1,1654 @@
+openapi: 3.0.3
+
+info:
+  title: CAB System API
+  description: |
+    API Document cho hệ thống đặt xe trực tuyến CAB System.
+
+    Hệ thống hỗ trợ:
+    - Xác thực và phân quyền người dùng
+    - Quản lý khách hàng, tài xế và phương tiện
+    - Tạo yêu cầu đặt xe
+    - Xác định thông tin cước
+    - Tìm và phân công tài xế
+    - Quản lý và theo dõi chuyến đi
+    - Thanh toán tiền mặt và thanh toán điện tử
+    - Gửi thông báo
+    - Quản lý lịch sử và đánh giá
+    - Quản lý vận hành
+    - Báo cáo hoạt động
+
+    Các API được thiết kế dựa trên Business Requirements BR-01 đến BR-11
+    và Functional Requirements FR-01 đến FR-13.
+
+  version: 1.0.0
+  contact:
+    name: CAB System
+
+servers:
+  - url: http://localhost:8080/api
+    description: Local Development Server
+
+tags:
+  - name: Authentication
+    description: BR-01 - Xác thực và phân quyền
+  - name: Customers
+    description: BR-02 - Quản lý khách hàng
+  - name: Drivers
+    description: BR-02, BR-05, BR-06 - Quản lý và điều phối tài xế
+  - name: Vehicles
+    description: BR-02 - Quản lý phương tiện
+  - name: Trips
+    description: BR-03, BR-06, BR-07 - Đặt và quản lý chuyến
+  - name: Fares
+    description: BR-04 - Tính cước
+  - name: Payments
+    description: BR-08 - Thanh toán
+  - name: Notifications
+    description: BR-09 - Thông báo
+  - name: History & Rating
+    description: BR-10 - Lịch sử và đánh giá
+  - name: Operations
+    description: BR-11 - Quản lý vận hành
+  - name: Reports
+    description: BR-11 - Báo cáo
+
+security:
+  - BearerAuth: []
+
+paths:
+  # ============================================================
+  # BR-01 - AUTHENTICATION
+  # ============================================================
+
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Đăng ký tài khoản
+      description: |
+        Tạo tài khoản cho khách hàng hoặc tài xế.
+        Không yêu cầu xác thực trước khi đăng ký.
+      operationId: registerUser
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+            example:
+              fullName: Nguyen Van A
+              phone: "0901234567"
+              password: "123456"
+              role: CUSTOMER
+      responses:
+        "201":
+          description: Đăng ký thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          description: Số điện thoại đã tồn tại
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Đăng nhập
+      description: Xác thực người dùng và cấp access token.
+      operationId: loginUser
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+            example:
+              phone: "0901234567"
+              password: "123456"
+      responses:
+        "200":
+          description: Đăng nhập thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Đăng xuất
+      operationId: logoutUser
+      responses:
+        "200":
+          description: Đăng xuất thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  # ============================================================
+  # BR-02 - CUSTOMER
+  # ============================================================
+
+  /customers/{customerId}:
+    get:
+      tags:
+        - Customers
+      summary: Xem thông tin khách hàng
+      operationId: getCustomer
+      parameters:
+        - $ref: "#/components/parameters/CustomerId"
+      responses:
+        "200":
+          description: Thông tin khách hàng
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    put:
+      tags:
+        - Customers
+      summary: Cập nhật thông tin khách hàng
+      operationId: updateCustomer
+      parameters:
+        - $ref: "#/components/parameters/CustomerId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCustomerRequest"
+      responses:
+        "200":
+          description: Cập nhật thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ============================================================
+  # BR-02 - DRIVER
+  # ============================================================
+
+  /drivers/{driverId}:
+    get:
+      tags:
+        - Drivers
+      summary: Xem thông tin tài xế
+      operationId: getDriver
+      parameters:
+        - $ref: "#/components/parameters/DriverId"
+      responses:
+        "200":
+          description: Thông tin tài xế
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Driver"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    put:
+      tags:
+        - Drivers
+      summary: Cập nhật hồ sơ tài xế
+      operationId: updateDriver
+      parameters:
+        - $ref: "#/components/parameters/DriverId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDriverRequest"
+      responses:
+        "200":
+          description: Cập nhật thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  # ============================================================
+  # BR-02 - VEHICLE
+  # ============================================================
+
+  /drivers/{driverId}/vehicle:
+    get:
+      tags:
+        - Vehicles
+      summary: Xem phương tiện của tài xế
+      operationId: getDriverVehicle
+      parameters:
+        - $ref: "#/components/parameters/DriverId"
+      responses:
+        "200":
+          description: Thông tin phương tiện
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vehicle"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+    put:
+      tags:
+        - Vehicles
+      summary: Cập nhật phương tiện
+      operationId: updateDriverVehicle
+      parameters:
+        - $ref: "#/components/parameters/DriverId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VehicleRequest"
+            example:
+              vehicleType: CAR_4_SEATS
+              licensePlate: "51A-12345"
+      responses:
+        "200":
+          description: Cập nhật phương tiện thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  # ============================================================
+  # BR-03 - CREATE TRIP
+  # ============================================================
+
+  /trips/requests:
+    post:
+      tags:
+        - Trips
+      summary: Tạo yêu cầu đặt xe
+      description: |
+        Khách hàng nhập điểm đón, điểm đến và lựa chọn loại xe
+        để tạo yêu cầu chuyến.
+      operationId: createTripRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTripRequest"
+            example:
+              pickup:
+                address: "109 Le Loi, Go Vap, HCM"
+                latitude: 10.8231
+                longitude: 106.6297
+              destination:
+                address: "Truong Dai hoc Cong Nghiep TP.HCM"
+                latitude: 10.8556
+                longitude: 106.6297
+              vehicleType: CAR_4_SEATS
+      responses:
+        "201":
+          description: Tạo yêu cầu chuyến thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TripCreatedResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  # ============================================================
+  # BR-04 - FARE
+  # ============================================================
+
+  /fares/estimate:
+    post:
+      tags:
+        - Fares
+      summary: Xác định thông tin cước
+      description: |
+        Xác định và hiển thị thông tin cước dựa trên
+        loại dịch vụ và thông tin chuyến đi.
+
+        Công thức tính cước cụ thể cần được doanh nghiệp xác nhận.
+      operationId: estimateFare
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FareEstimateRequest"
+      responses:
+        "200":
+          description: Thông tin cước
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FareEstimateResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  # ============================================================
+  # BR-05 - DRIVER MATCHING
+  # ============================================================
+
+  /drivers/matching:
+    get:
+      tags:
+        - Drivers
+      summary: Tìm tài xế phù hợp
+      description: |
+        Tìm tài xế dựa trên vị trí, trạng thái sẵn sàng
+        và các tiêu chí vận hành.
+      operationId: findMatchingDrivers
+      parameters:
+        - name: tripId
+          in: query
+          required: true
+          schema:
+            type: string
+          example: TRIP001
+      responses:
+        "200":
+          description: Danh sách tài xế phù hợp
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DriverMatchingResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /trips/{tripId}/driver-offers:
+    post:
+      tags:
+        - Drivers
+      summary: Gửi đề xuất chuyến cho tài xế
+      operationId: sendDriverOffer
+      parameters:
+        - $ref: "#/components/parameters/TripId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DriverOfferRequest"
+            example:
+              driverId: 2001
+      responses:
+        "201":
+          description: Đã gửi đề xuất chuyến
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DriverOfferResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  # ============================================================
+  # BR-06 - ACCEPT / REJECT / STATUS
+  # ============================================================
+
+  /trips/{tripId}/accept:
+    post:
+      tags:
+        - Trips
+      summary: Tài xế chấp nhận chuyến
+      operationId: acceptTrip
+      parameters:
+        - $ref: "#/components/parameters/TripId"
+      responses:
+        "200":
+          description: Tài xế đã nhận chuyến
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TripStatusResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /trips/{tripId}/reject:
+    post:
+      tags:
+        - Trips
+      summary: Tài xế từ chối chuyến
+      operationId: rejectTrip
+      parameters:
+        - $ref: "#/components/parameters/TripId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RejectTripRequest"
+      responses:
+        "200":
+          description: Từ chối chuyến thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TripStatusResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /trips/{tripId}/status:
+    patch:
+      tags:
+        - Trips
+      summary: Cập nhật trạng thái chuyến
+      operationId: updateTripStatus
+      parameters:
+        - $ref: "#/components/parameters/TripId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTripStatusRequest"
+            example:
+              status: ARRIVED_PICKUP
+      responses:
+        "200":
+          description: Cập nhật trạng thái thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TripStatusResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  # ============================================================
+  # BR-07 - TRACKING
+  # ============================================================
+
+  /trips/{tripId}:
+    get:
+      tags:
+        - Trips
+      summary: Xem thông tin và trạng thái chuyến
+      operationId: getTrip
+      parameters:
+        - $ref: "#/components/parameters/TripId"
+      responses:
+        "200":
+          description: Thông tin chuyến
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Trip"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /trips/{tripId}/driver-location:
+    get:
+      tags:
+        - Trips
+      summary: Theo dõi vị trí tài xế
+      operationId: getDriverLocation
+      parameters:
+        - $ref: "#/components/parameters/TripId"
+      responses:
+        "200":
+          description: Vị trí hiện tại của tài xế
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DriverLocation"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ============================================================
+  # BR-08 - PAYMENT
+  # ============================================================
+
+  /payments:
+    post:
+      tags:
+        - Payments
+      summary: Tạo yêu cầu thanh toán
+      description: |
+        Hỗ trợ thanh toán tiền mặt hoặc thanh toán điện tử.
+        Thanh toán điện tử được xử lý thông qua nhà cung cấp bên ngoài.
+      operationId: createPayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePaymentRequest"
+            examples:
+              cash:
+                summary: Thanh toán tiền mặt
+                value:
+                  tripId: TRIP001
+                  method: CASH
+              electronic:
+                summary: Thanh toán điện tử
+                value:
+                  tripId: TRIP001
+                  method: E_WALLET
+      responses:
+        "201":
+          description: Tạo thanh toán thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Payment"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /payments/callback:
+    post:
+      tags:
+        - Payments
+      summary: Nhận kết quả thanh toán điện tử
+      description: Callback từ nhà cung cấp thanh toán bên ngoài.
+      operationId: paymentCallback
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentCallbackRequest"
+      responses:
+        "200":
+          description: Đã cập nhật kết quả thanh toán
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  # ============================================================
+  # BR-09 - NOTIFICATIONS
+  # ============================================================
+
+  /notifications:
+    post:
+      tags:
+        - Notifications
+      summary: Gửi thông báo
+      description: |
+        Gửi thông báo đến khách hàng hoặc tài xế
+        về các sự kiện quan trọng của chuyến và thanh toán.
+      operationId: sendNotification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationRequest"
+      responses:
+        "201":
+          description: Gửi thông báo thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  # ============================================================
+  # BR-10 - HISTORY
+  # ============================================================
+
+  /customers/{customerId}/trips:
+    get:
+      tags:
+        - History & Rating
+      summary: Xem lịch sử chuyến
+      operationId: getCustomerTripHistory
+      parameters:
+        - $ref: "#/components/parameters/CustomerId"
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Danh sách lịch sử chuyến
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TripHistoryResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /trips/{tripId}/rating:
+    post:
+      tags:
+        - History & Rating
+      summary: Đánh giá tài xế
+      description: |
+        Khách hàng đánh giá tài xế sau khi chuyến đi hoàn thành.
+      operationId: rateDriver
+      parameters:
+        - $ref: "#/components/parameters/TripId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RatingRequest"
+            example:
+              driverId: 2001
+              rating: 5
+              comment: "Tài xế thân thiện, chuyến đi an toàn."
+      responses:
+        "201":
+          description: Đánh giá thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RatingResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  # ============================================================
+  # BR-11 - OPERATIONS
+  # ============================================================
+
+  /admin/customers:
+    get:
+      tags:
+        - Operations
+      summary: Quản lý khách hàng
+      description: Nhân viên vận hành xem danh sách khách hàng.
+      operationId: getAdminCustomers
+      responses:
+        "200":
+          description: Danh sách khách hàng
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminCustomerListResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /admin/drivers:
+    get:
+      tags:
+        - Operations
+      summary: Quản lý tài xế
+      description: Nhân viên vận hành xem danh sách tài xế.
+      operationId: getAdminDrivers
+      responses:
+        "200":
+          description: Danh sách tài xế
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminDriverListResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /admin/trips:
+    get:
+      tags:
+        - Operations
+      summary: Quản lý chuyến đi
+      description: Nhân viên vận hành xem danh sách chuyến.
+      operationId: getAdminTrips
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/TripStatus"
+      responses:
+        "200":
+          description: Danh sách chuyến
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminTripListResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /admin/trips/{tripId}:
+    patch:
+      tags:
+        - Operations
+      summary: Hỗ trợ xử lý chuyến gặp lỗi
+      description: |
+        Nhân viên vận hành cập nhật thông tin/trạng thái
+        chuyến để hỗ trợ xử lý trường hợp lỗi.
+      operationId: handleTripIssue
+      parameters:
+        - $ref: "#/components/parameters/TripId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminTripUpdateRequest"
+      responses:
+        "200":
+          description: Xử lý thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ============================================================
+  # BR-11 - REPORTS
+  # ============================================================
+
+  /reports/operations:
+    get:
+      tags:
+        - Reports
+      summary: Xem báo cáo hoạt động
+      description: |
+        Cung cấp các chỉ số hoạt động phục vụ ban lãnh đạo,
+        bao gồm số chuyến, doanh thu, tỷ lệ hoàn thành
+        và tỷ lệ hủy.
+      operationId: getOperationReport
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          example: "2026-09-01"
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          example: "2026-09-07"
+      responses:
+        "200":
+          description: Báo cáo hoạt động
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OperationReport"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+# ================================================================
+# COMPONENTS
+# ================================================================
+
+components:
+  # --------------------------------------------------------------
+  # SECURITY
+  # --------------------------------------------------------------
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT Access Token được cấp sau khi đăng nhập.
+
+  # --------------------------------------------------------------
+  # PARAMETERS
+  # --------------------------------------------------------------
+
+  parameters:
+    CustomerId:
+      name: customerId
+      in: path
+      required: true
+      description: ID của khách hàng
+      schema:
+        type: integer
+        format: int64
+      example: 1001
+
+    DriverId:
+      name: driverId
+      in: path
+      required: true
+      description: ID của tài xế
+      schema:
+        type: integer
+        format: int64
+      example: 2001
+
+    TripId:
+      name: tripId
+      in: path
+      required: true
+      description: ID của chuyến
+      schema:
+        type: string
+      example: TRIP001
+
+  # --------------------------------------------------------------
+  # RESPONSES
+  # --------------------------------------------------------------
+
+  responses:
+    BadRequest:
+      description: Dữ liệu yêu cầu không hợp lệ
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    Unauthorized:
+      description: Chưa xác thực hoặc token không hợp lệ
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    Forbidden:
+      description: Không có quyền thực hiện thao tác
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    NotFound:
+      description: Không tìm thấy dữ liệu
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+  # --------------------------------------------------------------
+  # SCHEMAS
+  # --------------------------------------------------------------
+
+  schemas:
+    # ============================
+    # AUTH
+    # ============================
+
+    RegisterRequest:
+      type: object
+      required:
+        - fullName
+        - phone
+        - password
+        - role
+      properties:
+        fullName:
+          type: string
+          example: Nguyen Van A
+        phone:
+          type: string
+          example: "0901234567"
+        password:
+          type: string
+          format: password
+          example: "123456"
+        role:
+          type: string
+          enum:
+            - CUSTOMER
+            - DRIVER
+
+    RegisterResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Đăng ký thành công
+        userId:
+          type: integer
+          example: 1001
+        role:
+          type: string
+          example: CUSTOMER
+
+    LoginRequest:
+      type: object
+      required:
+        - phone
+        - password
+      properties:
+        phone:
+          type: string
+          example: "0901234567"
+        password:
+          type: string
+          format: password
+          example: "123456"
+
+    LoginResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: jwt_access_token
+        userId:
+          type: integer
+          example: 1001
+        role:
+          type: string
+          enum:
+            - CUSTOMER
+            - DRIVER
+            - OPERATOR
+            - LEADER
+
+    # ============================
+    # CUSTOMER
+    # ============================
+
+    Customer:
+      type: object
+      properties:
+        customerId:
+          type: integer
+          example: 1001
+        fullName:
+          type: string
+          example: Nguyen Van A
+        phone:
+          type: string
+          example: "0901234567"
+        email:
+          type: string
+          format: email
+          example: a@gmail.com
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+
+    UpdateCustomerRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+          example: Nguyen Van A
+        email:
+          type: string
+          format: email
+          example: newmail@gmail.com
+
+    # ============================
+    # DRIVER
+    # ============================
+
+    Driver:
+      type: object
+      properties:
+        driverId:
+          type: integer
+          example: 2001
+        fullName:
+          type: string
+          example: Tran Van B
+        phone:
+          type: string
+          example: "0912345678"
+        status:
+          type: string
+          enum:
+            - AVAILABLE
+            - BUSY
+            - OFFLINE
+
+    UpdateDriverRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+          example: Tran Van B
+        phone:
+          type: string
+          example: "0912345678"
+
+    # ============================
+    # VEHICLE
+    # ============================
+
+    Vehicle:
+      type: object
+      properties:
+        vehicleType:
+          type: string
+          enum:
+            - CAR_4_SEATS
+            - CAR_7_SEATS
+            - MOTORBIKE
+        licensePlate:
+          type: string
+          example: "51A-12345"
+
+    VehicleRequest:
+      type: object
+      required:
+        - vehicleType
+        - licensePlate
+      properties:
+        vehicleType:
+          type: string
+          enum:
+            - CAR_4_SEATS
+            - CAR_7_SEATS
+            - MOTORBIKE
+        licensePlate:
+          type: string
+          example: "51A-12345"
+
+    # ============================
+    # LOCATION
+    # ============================
+
+    Location:
+      type: object
+      required:
+        - address
+        - latitude
+        - longitude
+      properties:
+        address:
+          type: string
+          example: "109 Le Loi, Go Vap, HCM"
+        latitude:
+          type: number
+          format: double
+          example: 10.8231
+        longitude:
+          type: number
+          format: double
+          example: 106.6297
+
+    # ============================
+    # TRIP
+    # ============================
+
+    CreateTripRequest:
+      type: object
+      required:
+        - pickup
+        - destination
+        - vehicleType
+      properties:
+        pickup:
+          $ref: "#/components/schemas/Location"
+        destination:
+          $ref: "#/components/schemas/Location"
+        vehicleType:
+          type: string
+          enum:
+            - CAR_4_SEATS
+            - CAR_7_SEATS
+            - MOTORBIKE
+
+    TripCreatedResponse:
+      type: object
+      properties:
+        tripId:
+          type: string
+          example: TRIP001
+        status:
+          $ref: "#/components/schemas/TripStatus"
+        message:
+          type: string
+          example: Yêu cầu đặt xe đã được tạo
+
+    Trip:
+      type: object
+      properties:
+        tripId:
+          type: string
+          example: TRIP001
+        status:
+          $ref: "#/components/schemas/TripStatus"
+        pickup:
+          $ref: "#/components/schemas/Location"
+        destination:
+          $ref: "#/components/schemas/Location"
+        driver:
+          $ref: "#/components/schemas/Driver"
+        fare:
+          type: number
+          format: double
+          example: 95000
+
+    TripStatus:
+      type: string
+      enum:
+        - SEARCHING_DRIVER
+        - DRIVER_ACCEPTED
+        - ARRIVED_PICKUP
+        - PICKED_UP
+        - IN_PROGRESS
+        - COMPLETED
+        - CANCELLED
+
+    UpdateTripStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: "#/components/schemas/TripStatus"
+
+    TripStatusResponse:
+      type: object
+      properties:
+        tripId:
+          type: string
+          example: TRIP001
+        driverId:
+          type: integer
+          example: 2001
+        status:
+          $ref: "#/components/schemas/TripStatus"
+        message:
+          type: string
+          example: Cập nhật trạng thái thành công
+
+    RejectTripRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          example: TOO_FAR
+
+    # ============================
+    # DRIVER MATCHING
+    # ============================
+
+    DriverMatchingItem:
+      type: object
+      properties:
+        driverId:
+          type: integer
+          example: 2001
+        distance:
+          type: number
+          format: double
+          example: 1.2
+        status:
+          type: string
+          example: AVAILABLE
+
+    DriverMatchingResponse:
+      type: object
+      properties:
+        tripId:
+          type: string
+          example: TRIP001
+        drivers:
+          type: array
+          items:
+            $ref: "#/components/schemas/DriverMatchingItem"
+
+    DriverOfferRequest:
+      type: object
+      required:
+        - driverId
+      properties:
+        driverId:
+          type: integer
+          example: 2001
+
+    DriverOfferResponse:
+      type: object
+      properties:
+        tripId:
+          type: string
+          example: TRIP001
+        driverId:
+          type: integer
+          example: 2001
+        message:
+          type: string
+          example: Đã gửi đề xuất chuyến
+
+    # ============================
+    # FARE
+    # ============================
+
+    FareEstimateRequest:
+      type: object
+      required:
+        - pickup
+        - destination
+        - vehicleType
+      properties:
+        pickup:
+          $ref: "#/components/schemas/Location"
+        destination:
+          $ref: "#/components/schemas/Location"
+        vehicleType:
+          type: string
+          enum:
+            - CAR_4_SEATS
+            - CAR_7_SEATS
+            - MOTORBIKE
+
+    FareEstimateResponse:
+      type: object
+      properties:
+        vehicleType:
+          type: string
+          example: CAR_4_SEATS
+        distance:
+          type: number
+          format: double
+          example: 8.5
+        estimatedFare:
+          type: number
+          format: double
+          example: 95000
+        currency:
+          type: string
+          example: VND
+
+    # ============================
+    # DRIVER LOCATION
+    # ============================
+
+    DriverLocation:
+      type: object
+      properties:
+        driverId:
+          type: integer
+          example: 2001
+        latitude:
+          type: number
+          format: double
+          example: 10.8241
+        longitude:
+          type: number
+          format: double
+          example: 106.6305
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2026-09-07T18:30:00+07:00"
+
+    # ============================
+    # PAYMENT
+    # ============================
+
+    CreatePaymentRequest:
+      type: object
+      required:
+        - tripId
+        - method
+      properties:
+        tripId:
+          type: string
+          example: TRIP001
+        method:
+          type: string
+          enum:
+            - CASH
+            - E_WALLET
+
+    Payment:
+      type: object
+      properties:
+        paymentId:
+          type: string
+          example: PAY001
+        tripId:
+          type: string
+          example: TRIP001
+        amount:
+          type: number
+          format: double
+          example: 95000
+        method:
+          type: string
+          enum:
+            - CASH
+            - E_WALLET
+        status:
+          type: string
+          enum:
+            - PENDING
+            - SUCCESS
+            - FAILED
+
+    PaymentCallbackRequest:
+      type: object
+      required:
+        - paymentId
+        - status
+      properties:
+        paymentId:
+          type: string
+          example: PAY001
+        status:
+          type: string
+          enum:
+            - SUCCESS
+            - FAILED
+        transactionId:
+          type: string
+          example: TXN123456
+
+    # ============================
+    # NOTIFICATION
+    # ============================
+
+    NotificationRequest:
+      type: object
+      required:
+        - userId
+        - type
+        - title
+        - message
+      properties:
+        userId:
+          type: integer
+          example: 1001
+        type:
+          type: string
+          enum:
+            - DRIVER_ACCEPTED
+            - DRIVER_ARRIVED
+            - TRIP_COMPLETED
+            - PAYMENT_SUCCESS
+            - PAYMENT_FAILED
+            - NO_DRIVER_FOUND
+        title:
+          type: string
+          example: Tài xế đã nhận chuyến
+        message:
+          type: string
+          example: Tài xế Trần Văn B đã nhận chuyến của bạn.
+        tripId:
+          type: string
+          example: TRIP001
+
+    NotificationResponse:
+      type: object
+      properties:
+        notificationId:
+          type: string
+          example: NOTI001
+        status:
+          type: string
+          enum:
+            - SENT
+            - FAILED
+
+    # ============================
+    # HISTORY
+    # ============================
+
+    TripHistoryItem:
+      type: object
+      properties:
+        tripId:
+          type: string
+          example: TRIP001
+        date:
+          type: string
+          format: date
+          example: "2026-09-07"
+        pickup:
+          type: string
+          example: Go Vap
+        destination:
+          type: string
+          example: IUH
+        fare:
+          type: number
+          example: 95000
+        status:
+          $ref: "#/components/schemas/TripStatus"
+
+    TripHistoryResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/TripHistoryItem"
+
+    # ============================
+    # RATING
+    # ============================
+
+    RatingRequest:
+      type: object
+      required:
+        - driverId
+        - rating
+      properties:
+        driverId:
+          type: integer
+          example: 2001
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+        comment:
+          type: string
+          example: Tài xế thân thiện, chuyến đi an toàn.
+
+    RatingResponse:
+      type: object
+      properties:
+        ratingId:
+          type: string
+          example: RATE001
+        message:
+          type: string
+          example: Đánh giá thành công
+
+    # ============================
+    # ADMIN / OPERATIONS
+    # ============================
+
+    AdminCustomer:
+      type: object
+      properties:
+        customerId:
+          type: integer
+          example: 1001
+        fullName:
+          type: string
+          example: Nguyen Van A
+        phone:
+          type: string
+          example: "0901234567"
+        status:
+          type: string
+          example: ACTIVE
+
+    AdminCustomerListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminCustomer"
+
+    AdminDriverListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Driver"
+
+    AdminTripListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Trip"
+
+    AdminTripUpdateRequest:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/TripStatus"
+        note:
+          type: string
+          example: Hỗ trợ xử lý sự cố chuyến đi
+
+    # ============================
+    # REPORT
+    # ============================
+
+    OperationReport:
+      type: object
+      properties:
+        from:
+          type: string
+          format: date
+          example: "2026-09-01"
+        to:
+          type: string
+          format: date
+          example: "2026-09-07"
+        totalTrips:
+          type: integer
+          example: 1250
+        completedTrips:
+          type: integer
+          example: 1100
+        cancelledTrips:
+          type: integer
+          example: 150
+        revenue:
+          type: number
+          format: double
+          example: 125000000
+        completionRate:
+          type: number
+          format: double
+          example: 88
+        cancellationRate:
+          type: number
+          format: double
+          example: 12
+
+    # ============================
+    # COMMON
+    # ============================
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Thao tác thành công
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          example: INVALID_REQUEST
+        message:
+          type: string
+          example: Dữ liệu yêu cầu không hợp lệ
