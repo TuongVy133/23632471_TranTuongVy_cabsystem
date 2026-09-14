@@ -488,7 +488,7 @@ paths:
           $ref: "#/components/responses/Forbidden"
 
   /trips/{tripId}/status:
-    patch:
+    put:
       tags:
         - Trips
       summary: Cập nhật trạng thái chuyến
@@ -798,7 +798,7 @@ paths:
           $ref: "#/components/responses/Forbidden"
 
   /admin/trips/{tripId}:
-    patch:
+    put:
       tags:
         - Operations
       summary: Hỗ trợ xử lý chuyến gặp lỗi
